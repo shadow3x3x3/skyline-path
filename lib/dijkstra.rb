@@ -1,6 +1,6 @@
 # Dijkstra's algorithm for searching shorest path
 module Dijkstra
-  def shorest_path(src_id, dst_id)
+  def shorest_path_query(src_id, dst_id)
     dijkstra_init(src_id)
     until @vertices.empty?
       nearest_node = check_shortest
