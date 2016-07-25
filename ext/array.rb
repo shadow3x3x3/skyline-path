@@ -20,7 +20,7 @@ class Array
     raise "Need Array not #{array.class}"    unless array.class == Array
     raise 'Two Arrays are not the same size' unless size == array.size
     each_with_index do |attr, index|
-      aggregate_array << attr + array[index]
+      aggregate_array << (attr + array[index]).round(6)
     end
     aggregate_array
   end
