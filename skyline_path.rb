@@ -62,13 +62,10 @@ class SkylinePath < Graph
   end
 
   def arrived(cur, pass, attrs)
-    # @skyline_path[path_to_sym(pass)] = attrs unless @skyline_path.include?(path_to_sym(pass))
-    #  unless @skyline_path.include?(path_to_sym(pass))
     new_skyline_check(pass, attrs)
     pass.delete(cur)
   end
 
-  # TODO all process in there
   def new_skyline_check(pass, attrs)
     non_skyline = []
     new_skyline_flag = true
