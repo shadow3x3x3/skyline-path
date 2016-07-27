@@ -49,14 +49,15 @@ class SkylinePath < Graph
 
   private
 
-  def sky_path(cur, dst, pass = [])
+  def sky_path(cur, dst, pass = [], cur_attrs = Array.new(@dim, 0))
     pass << cur
     if cur == dst
-      pass = arrived(cur, pass, attrs_in(pass)) unless full_dominance?(attrs_in(pass))
+      pass = arrived(cur, pass, cur_attrs) unless full_dominance?(cur_attrs)
       return
     end
     find_neighbors(cur).each do |n|
-      sky_path(n, dst, pass) if next_hop?(n, pass)
+      next_path_attrs = cur_attrs.aggregate(attr_between(cur, n))
+      sky_path(n, dst, pass, next_path_attrs) if next_hop?(n, pass, next_path_attrs)
     end
     pass.delete(cur)
   end
@@ -81,8 +82,7 @@ class SkylinePath < Graph
     @skyline_path[path_to_sym(pass)] = attrs if new_skyline_flag
   end
 
-  def next_hop?(n, pass)
-    next_path_attrs = attrs_in(pass + [n])
+  def next_hop?(n, pass, next_path_attrs)
     unless @distance_limit.nil?
       return false if out_of_limit?(next_path_attrs.first)
     end
@@ -143,30 +143,3 @@ class SkylinePath < Graph
 
 
 end
-
-experiment = 'test'
-
-case experiment
-when 'salu'
-  EDGE_PATH = './salu-data/salu_edge_160203_450.txt'.freeze
-  NODE_PATH = './salu-data/salu_node_160203.txt'.freeze
-  DIM       = 7
-when 'test'
-  EDGE_PATH = './test-data/test-edge.txt'.freeze
-  NODE_PATH = './test-data/test-node.txt'.freeze
-  DIM       = 4
-when 'go'
-  EDGE_PATH = './go-data/4_goEdge.txt'.freeze
-  NODE_PATH = './go-data/node.txt'.freeze
-  DIM       = 4
-end
-
-test_edges = File.read(EDGE_PATH)
-test_nodes = File.read(NODE_PATH)
-
-sp = SkylinePath.new(dim: DIM, raw_edges: test_edges, raw_nodes: test_nodes)
-p sp.query_skyline_path(src_id: 0, dst_id: 5)
-# p sp.attrs_in([2590,971,973,1075,1077,1081,1082,1032,1357,1338,1337,1349,1071,934,933,964,963,938,937,978,977])
-# p sp.attrs_in([2590, 971, 973, 2588, 3130, 1582, 3114, 1066, 2394, 2238, 2388, 2385, 970, 1033, 1520, 2430, 1421, 1262, 814, 813, 982, 1424, 977])
-# p sp.attrs_in([2359, 2357, 1165])
-# p sp.attrs_in([0, 1, 2, 4, 5])
